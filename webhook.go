@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -14,6 +15,7 @@ var (
 )
 
 func init() {
+	//TODO check .ssh folder premitions
 	workdir = os.Getenv("WEBHOOK_WORKDIR")
 	secret = os.Getenv("WEBHOOK_SECRET")
 	port = os.Getenv("WEBHOOK_PORT")
@@ -26,6 +28,7 @@ func init() {
 // do git pull command
 func doPull() (err error) {
 	cmd := exec.Command("/bin/sh", "-c", fmt.Sprintf("cd %s; git pull;", workdir))
+	log.Printf("run it: cd %s; git pull;", workdir)
 	err = cmd.Run()
 	return
 }
@@ -36,6 +39,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	if querySecret != "" && querySecret == secret {
 		err := doPull()
 		if err != nil {
+			log.Printf("%s\n", err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
