@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN go build -o ./webhook
 
-FROM alpine
+FROM --platform=$BUILDPLATFORM alpine
 RUN apk --update add git bash openssh-client
 WORKDIR /app
 COPY --from=builder /app/webhook /usr/bin/
